@@ -1,8 +1,0 @@
-#!/bin/ksh
-echo "install.site"
-uname -a
-df -h
-pwd
-ls -al /etc
-cat /etc/rc.firsttime
-cp /etc/examples/doas.conf /etc

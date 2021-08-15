@@ -1,0 +1,8 @@
+define(SYSTEM_HOSTNAME, XXXXXXX)
+define(ROOT_PASSWORD, XXXXXXX)
+define(TTY_CONSOLE, yes)
+define(USER, admin) 
+define(USER_PASSWORD, *************)
+define(PUBLIC_KEY, XXXXXXXXXXXXXX)
+define(TIMEZONE, US/Central)
+define(OPENBSD_MIRROR, cdn.openbsd.org)

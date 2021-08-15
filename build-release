@@ -1,0 +1,9 @@
+#!/bin/ksh
+MACHINE=$1 FILES=$2
+rm -rf /root/custom
+mkdir /root/custom
+for file in $FILES; do
+  cp $file /root/custom
+done  
+chown -R root.wheel /root/custom
+

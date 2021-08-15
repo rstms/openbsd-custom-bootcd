@@ -123,7 +123,8 @@ SYMLINK	install.sub				upgrade
 
 # custom-bootcd-begin
 COPY /root/custom/auto_install.conf		auto_install.conf
-COPY /root/custom/site.tgz			${OSrev}/amd64/site${OSrev}.tgz
+COPY /root/custom/site${OSREV}.tgz		${OSrev}/${MACHINE}/site${OSrev}.tgz
+COPY /root/custom/INSTALL.${MACHINE}		${OSrev}/${MACHINE}/INSTALL.${MACHINE}
 # custom-bootcd-end
 
 TZ

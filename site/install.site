@@ -1,0 +1,3 @@
+#!/bin/ksh
+echo "Enabling doas for group wheel"
+cp /etc/examples/doas.conf /etc
