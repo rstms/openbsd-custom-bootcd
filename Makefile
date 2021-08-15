@@ -81,4 +81,4 @@ ${custom_boot_iso}: verify unpatch patches patch tarball ${boot_files}
 	for file in ${boot_files}; do cp $$file /root/custom; done  
 	chown -R root.wheel /root/custom
 	ksh -c 'cd /usr/src/etc;time make release'
-	cp $RELEASEDIR/cd${OSREV}.iso ./custom${OSREV}.iso
+	cp $$RELEASEDIR/cd${OSREV}.iso ./custom${OSREV}.iso

@@ -43,7 +43,6 @@ ${CDROM}: bsd.rd
 	echo "set image /${OSREV}/${MACHINE}/bsd.rd" > ${.OBJDIR}/cd-dir/etc/boot.conf
 	# custom-bootcd-begin
 	cat /root/custom/boot-message >> ${.OBJDIR}/cd-dir/etc/boot.conf
-	cp /root/custom/auto_install.conf ${.OBJDIR}/cd-dir/auto_install.conf
 	cp /root/custom/site${OSrev}.tgz ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}/site${OSrev}.tgz
 	cp /root/custom/INSTALL.${MACHINE} ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}/INSTALL.${MACHINE}
 	# custom-bootcd-end

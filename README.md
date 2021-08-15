@@ -57,3 +57,7 @@ To build the ISO image:
 ```
 doas gmake
 ```
+
+### Notes
+patch `/usr/src/distrib/amd64/ramdisk_cd/list` to add files to the `bsd.rd` ramdisk
+patch `/usr/src/distrib/amd64/ramdisk_cd/Makefile` to add files to the iso filesystem

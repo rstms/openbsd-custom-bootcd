@@ -1,3 +1,7 @@
 #!/bin/ksh
-echo "Enabling doas for group wheel"
+
+# enable doas for group wheel
 cp /etc/examples/doas.conf /etc
+
+# apply system patches on first boot
+cat "syspatch && reboot" >>/etc/rc.firsttime
