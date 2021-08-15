@@ -21,8 +21,9 @@ custom_files := $(shell find src -type f)
 patch_files := $(custom_files:.s=.patch)
 source_files := $(addprefix /usr/,$(basename $(custom_files)))
 boot_files := auto_install.conf boot-message ${tarball} INSTALL.${MACHINE}
+custom_boot_iso := custom${OSREV}.iso
 
-all: verify patches patch ${boot_files} ${package_files} build
+iso:	${custom_boot_iso}
 
 test:
 	@echo MACHINE=${MACHINE}
@@ -57,18 +58,26 @@ unpatch: ${source_files}
 require_root = $(if $(shell [[ $$(id -u) = 0 ]] && echo root),,$(error requires root))
 require_var = $(if $(shell [ "$(1)" ] && echo ok),,$(error $(1) must be set))
 
-tarball: ${tarball}
-
 ${tarball}: ${tarball_files}
 	$(call require_root)
 	chown -R root.wheel site
 	tar czvf ${tarball} -C site . 
 
-build: ${boot_files}
+tarball: ${tarball}
+
+${custom_boot_iso}: verify patches patch tarball ${boot_files}
 	$(call require_root)
-	./build-release	${MACHINE} "${boot_files}"
+	./build-release	${MACHINE} ${OSrev} ${OSREV} "${boot_files}"
+
+boot-message:
+	m4 \
+	  -DBUILD_HOST="$(shell uname -a)"\
+	  -DBUILD_USER="$(shell git config user.name) <$(shell git config user.email)>"\
+	  -DBUILD_DATE="$(shell date)"\
+	  <boot-message.in >boot-message
 
 clean:
 	rm -f ${patch_files}
 	rm -f auto_install.conf
 	rm -f ${tarball}
+	rm -f boot-message

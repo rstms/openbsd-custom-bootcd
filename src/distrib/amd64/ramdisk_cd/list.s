@@ -123,8 +123,11 @@ SYMLINK	install.sub				upgrade
 
 # custom-bootcd-begin
 COPY /root/custom/auto_install.conf		auto_install.conf
-COPY /root/custom/site${OSREV}.tgz		${OSrev}/${MACHINE}/site${OSrev}.tgz
-COPY /root/custom/INSTALL.${MACHINE}		${OSrev}/${MACHINE}/INSTALL.${MACHINE}
+COPY /root/custom/site69.tgz			6.9/${MACHINE}/site69.tgz
+COPY /root/custom/INSTALL.${MACHINE}		6.9/${MACHINE}/INSTALL.${MACHINE}
+SPECIAL echo OSREV=${OSREV}
+SPECIAL echo OSrev=${OSrev}
+SPECIAL set
 # custom-bootcd-end
 
 TZ

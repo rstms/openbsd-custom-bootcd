@@ -1,7 +1,10 @@
-echo 
 echo +--------------------------------+
 echo | Automatic OpenBSD Installation |
 echo +--------------------------------+
+echo 
+echo BUILD_HOST
+echo BUILD_USER
+echo BUILD_DATE
 echo  
 echo WARNING, WARNING, DANGER, WILL ROBINSON!
 echo 
@@ -11,3 +14,4 @@ echo primary drive, DESTRUCTIVELY overwriting any existing data.
 echo 
 echo To prevent the installation, power this system down immediately.
 echo 
+echo ---------------------------------------------------------------------
