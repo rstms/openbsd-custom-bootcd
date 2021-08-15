@@ -3,7 +3,6 @@ echo | Automatic OpenBSD Installation |
 echo +--------------------------------+
 echo 
 echo BUILD_HOST
-echo BUILD_USER
 echo BUILD_DATE
 echo  
 echo WARNING, WARNING, DANGER, WILL ROBINSON!

@@ -65,19 +65,20 @@ ${tarball}: ${tarball_files}
 
 tarball: ${tarball}
 
-${custom_boot_iso}: verify patches patch tarball ${boot_files}
-	$(call require_root)
-	./build-release	${MACHINE} ${OSrev} ${OSREV} "${boot_files}"
-
 boot-message:
-	m4 \
-	  -DBUILD_HOST="$(shell uname -a)"\
-	  -DBUILD_USER="$(shell git config user.name) <$(shell git config user.email)>"\
-	  -DBUILD_DATE="$(shell date)"\
-	  <boot-message.in >boot-message
+	m4 -DBUILD_HOST="$(shell uname -a)" -DBUILD_DATE="$(shell date)" <boot-message.in >boot-message
 
-clean:
+clean: unpatch
 	rm -f ${patch_files}
 	rm -f auto_install.conf
 	rm -f ${tarball}
 	rm -f boot-message
+
+${custom_boot_iso}: verify unpatch patches patch tarball ${boot_files}
+	$(call require_root)
+	rm -rf /root/custom
+	mkdir /root/custom
+	for file in ${boot_files}; do cp $$file /root/custom; done  
+	chown -R root.wheel /root/custom
+	ksh -c 'cd /usr/src/etc;time make release'
+	cp $RELEASEDIR/cd${OSREV}.iso ./custom${OSREV}.iso
