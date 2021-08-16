@@ -44,8 +44,9 @@ ${CDROM}: bsd.rd
 	# custom-bootcd-begin
 	echo "set timeout 10" >> ${.OBJDIR}/cd-dir/etc/boot.conf
 	cat /root/custom/boot-message >> ${.OBJDIR}/cd-dir/etc/boot.conf
-	cp /root/custom/site${OSrev}.tgz ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}/site${OSrev}.tgz
-	cp /root/custom/INSTALL.${MACHINE} ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}/INSTALL.${MACHINE}
+	cp /root/custom/*${OSrev}.tgz ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
+	cp /root/custom/SHA256.sig ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
+	cp /root/custom/INSTALL.${MACHINE} ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
 	# custom-bootcd-end
 	echo "set tty com0" >> ${.OBJDIR}/cd-dir/etc/boot.conf
 	cp ${.OBJDIR}/bsd.rd ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}

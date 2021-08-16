@@ -22,9 +22,11 @@ tarball_files := $(shell find site -type f)
 custom_files := $(shell find src -type f)
 patch_files := $(custom_files:.s=.patch)
 source_files := $(addprefix /usr/,$(basename $(custom_files)))
-boot_files := auto_install.conf boot-message INSTALL.${MACHINE}
+boot_files := auto_install.conf boot-message  
+mirror_files := INSTALL.${MACHINE} SHA256.sig base${OSREV}.tgz cdboot cdbr comp${OSREV}.tgz \
+                game${OSREV}.tgz man${OSREV}.tgz xbase${OSREV}.tgz
 
-config: clean patch ${boot_files}
+config: clean patch ${boot_files} mirror_verified
 
 build: ${iso}
 
@@ -34,6 +36,11 @@ test:
 	@echo OSREV=${OSREV}
 	@echo tarball_files=${tarball_files}
 	@echo boot_files=${boot_files}
+	@echo mirror_files=${mirror_files}
+
+mirror_verified: mirror
+	${MAKE} -C mirror
+	touch mirror_verified
 
 patches: ${patch_files}
 
@@ -74,25 +81,24 @@ require_root = $(if $(shell [[ $$(id -u) = 0 ]] && echo root),,$(error requires 
 require_var = $(if $(shell [ -n "$${$(1)}" ] && echo ok),,$(error $(1) must be set))
 require_mfs_mount = $(if $(shell df | grep '^mfs:.*$(1)$$'),,$(error $(1) must be mounted as mfs))
 
-${iso}: tarball ${boot_files}
+${iso}: tarball ${boot_files} ${mirror_files}
 	$(require_root)
 	$(call require_var,DESTDIR)
 	$(call require_var,RELEASEDIR)
 	$(call require_mfs_mount,/usr/dest)
 	rm -rf /root/custom
-	mkdir /root/custom
-	for file in ${tarball} ${boot_files}; do cp $$file /root/custom; done  
+	for file in ${boot_files} ${tarball}; do cp $$file /root/custom; done  
+	for file in ${mirror_files}; do cp mirror/$$file /root/custom; done  
 	chown -R root.wheel /root/custom
+fnord:
 	ksh -c 'cd /usr/src/etc;time make release'
 	cp $$RELEASEDIR/cd${OSREV}.iso ${iso}
 	chown ${build_user} ${iso}
 	[ -n "$$UPLOAD_TARGET" ] && scp ${iso} $$UPLOAD_TARGET
 
 clean: unpatch
-	rm -f ${patch_files}
-	rm -f auto_install.conf
-	rm -f ${tarball}
-	rm -f boot-message
+	rm -f ${patch_files} ${tarball} auto_install.conf boot-message mirror_verified
 
 sterile: clean
 	rm -f *.iso
+	${MAKE} -C mirror clean
