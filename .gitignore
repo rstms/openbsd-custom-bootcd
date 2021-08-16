@@ -2,3 +2,8 @@ config.m4
 *.iso
 mirror/
 mirror_verified
+*.patch
+site??.tgz
+boot-message
+auto_install.conf
+
