@@ -23,8 +23,8 @@ custom_files := $(shell find src -type f)
 patch_files := $(custom_files:.s=.patch)
 source_files := $(addprefix /usr/,$(basename $(custom_files)))
 boot_files := auto_install.conf boot-message  
-mirror_files := INSTALL.${MACHINE} SHA256.sig base${OSREV}.tgz cdboot cdbr comp${OSREV}.tgz \
-                game${OSREV}.tgz man${OSREV}.tgz xbase${OSREV}.tgz
+mirror_files := SHA256.sig INSTALL.${MACHINE} cdboot cdbr bsd bsd.rd \
+	base${OSREV}.tgz comp${OSREV}.tgz game${OSREV}.tgz man${OSREV}.tgz xbase${OSREV}.tgz 
 
 config: clean patch ${boot_files} mirror_verified
 
@@ -87,14 +87,14 @@ ${iso}: tarball ${boot_files} $(addprefix mirror/,${mirror_files})
 	$(call require_var,RELEASEDIR)
 	$(call require_mfs_mount,/usr/dest)
 	rm -rf /root/custom
-	mkdir /root/custom
+	mkdir -p /root/custom/sets
 	for file in ${boot_files} ${tarball}; do cp $$file /root/custom; done  
-	for file in ${mirror_files}; do cp mirror/$$file /root/custom; done  
+	for file in ${mirror_files}; do cp mirror/$$file /root/custom/sets; done  
 	chown -R root.wheel /root/custom
 	ksh -c 'cd /usr/src/etc;time make release'
 	cp $$RELEASEDIR/cd${OSREV}.iso ${iso}
 	chown ${build_user} ${iso}
-	[ -n "$$UPLOAD_TARGET" ] && scp ${iso} $$UPLOAD_TARGET
+	[ -n "$$UPLOAD_COMMAND" ] && $$UPLOAD_COMMAND
 
 clean: unpatch
 	rm -f ${patch_files} ${tarball} auto_install.conf boot-message

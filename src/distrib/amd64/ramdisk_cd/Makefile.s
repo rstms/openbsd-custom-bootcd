@@ -40,17 +40,13 @@ ${CDROM}: bsd.rd
 	rm -rf ${.OBJDIR}/cd-dir
 	mkdir -p ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
 	mkdir -p ${.OBJDIR}/cd-dir/etc
-	echo "set image /${OSREV}/${MACHINE}/bsd.rd" > ${.OBJDIR}/cd-dir/etc/boot.conf
 	# custom-bootcd-begin
+	echo "set image /bsd.rd" > ${.OBJDIR}/cd-dir/etc/boot.conf
 	echo "set timeout 10" >> ${.OBJDIR}/cd-dir/etc/boot.conf
 	cat /root/custom/boot-message >> ${.OBJDIR}/cd-dir/etc/boot.conf
-	cp /root/custom/*${OSrev}.tgz ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
-	cp /root/custom/SHA256.sig ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
-	cp /root/custom/INSTALL.${MACHINE} ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
-	cp /root/custom/cdbr ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
-	cp /root/custom/cdboot ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}/cdboot
 	echo "set tty com0" >> ${.OBJDIR}/cd-dir/etc/boot.conf
-	cp ${.OBJDIR}/bsd.rd ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
+	cp /root/custom/sets/* ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
+	cp ${.OBJDIR}/bsd.rd ${.OBJDIR}/cd-dir/
 	# custom-bootcd-end
 	mkhybrid -a -R -T -L -l -d -D -N -o ${.OBJDIR}/${CDROM} \
 	    -A "OpenBSD ${OSREV} ${MACHINE} bootonly CD" \
