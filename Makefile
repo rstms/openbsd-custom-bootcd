@@ -81,24 +81,24 @@ require_root = $(if $(shell [[ $$(id -u) = 0 ]] && echo root),,$(error requires 
 require_var = $(if $(shell [ -n "$${$(1)}" ] && echo ok),,$(error $(1) must be set))
 require_mfs_mount = $(if $(shell df | grep '^mfs:.*$(1)$$'),,$(error $(1) must be mounted as mfs))
 
-${iso}: tarball ${boot_files} ${mirror_files}
+${iso}: tarball ${boot_files} $(addprefix mirror/,${mirror_files})
 	$(require_root)
 	$(call require_var,DESTDIR)
 	$(call require_var,RELEASEDIR)
 	$(call require_mfs_mount,/usr/dest)
 	rm -rf /root/custom
+	mkdir /root/custom
 	for file in ${boot_files} ${tarball}; do cp $$file /root/custom; done  
 	for file in ${mirror_files}; do cp mirror/$$file /root/custom; done  
 	chown -R root.wheel /root/custom
-fnord:
 	ksh -c 'cd /usr/src/etc;time make release'
 	cp $$RELEASEDIR/cd${OSREV}.iso ${iso}
 	chown ${build_user} ${iso}
 	[ -n "$$UPLOAD_TARGET" ] && scp ${iso} $$UPLOAD_TARGET
 
 clean: unpatch
-	rm -f ${patch_files} ${tarball} auto_install.conf boot-message mirror_verified
+	rm -f ${patch_files} ${tarball} auto_install.conf boot-message
 
 sterile: clean
-	rm -f *.iso
+	rm -f *.iso mirror_verified
 	${MAKE} -C mirror clean

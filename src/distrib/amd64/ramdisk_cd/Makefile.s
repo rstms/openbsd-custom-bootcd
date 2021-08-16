@@ -47,11 +47,11 @@ ${CDROM}: bsd.rd
 	cp /root/custom/*${OSrev}.tgz ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
 	cp /root/custom/SHA256.sig ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
 	cp /root/custom/INSTALL.${MACHINE} ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
-	# custom-bootcd-end
+	cp /root/custom/cdbr ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
+	cp /root/custom/cdboot ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}/cdboot
 	echo "set tty com0" >> ${.OBJDIR}/cd-dir/etc/boot.conf
 	cp ${.OBJDIR}/bsd.rd ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
-	cp ${DESTDIR}/usr/mdec/cdbr ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
-	cp ${DESTDIR}/usr/mdec/cdboot ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}/cdboot
+	# custom-bootcd-end
 	mkhybrid -a -R -T -L -l -d -D -N -o ${.OBJDIR}/${CDROM} \
 	    -A "OpenBSD ${OSREV} ${MACHINE} bootonly CD" \
 	    -P "Copyright (c) `date +%Y` Theo de Raadt, The OpenBSD project" \
