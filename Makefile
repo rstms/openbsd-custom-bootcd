@@ -6,6 +6,7 @@
 MACHINE:=$(shell uname -m)
 OSrev:=$(shell uname -r)
 OSREV:=$(shell uname -r | tr -d .)
+build_user := $(shell stat -f '%u.%g' $(lastword $(MAKEFILE_LIST)))
 
 .SUFFIXES: .s .patch
 .s.patch:
@@ -15,17 +16,17 @@ OSREV:=$(shell uname -r | tr -d .)
 .in.conf:
 	m4 $< | awk 'NF' >$@
 
+iso := custom${OSREV}.iso
 tarball := site${OSREV}.tgz
 tarball_files := $(shell find site -type f)
 custom_files := $(shell find src -type f)
 patch_files := $(custom_files:.s=.patch)
 source_files := $(addprefix /usr/,$(basename $(custom_files)))
 boot_files := auto_install.conf boot-message INSTALL.${MACHINE}
-custom_boot_iso := custom${OSREV}.iso
 
-config: verify clean patch ${boot_files}
+config: clean patch ${boot_files}
 
-build:	${custom_boot_iso}
+build: ${iso}
 
 test:
 	@echo MACHINE=${MACHINE}
@@ -34,9 +35,6 @@ test:
 	@echo tarball_files=${tarball_files}
 	@echo boot_files=${boot_files}
 
-verify:
-	@[ $(MAKE) == 'gmake' ] || false # This Makefile requires gmake
-
 patches: ${patch_files}
 
 autoinstall: auto_install.conf
@@ -44,7 +42,7 @@ autoinstall: auto_install.conf
 auto_install.conf: auto_install.in config.m4
 
 define check_patch = 
-	$(if $(shell grep '# custom-bootcd' $(1)),,patch $(1) $(patsubst /usr/%,%.patch,$(1));)
+	$(if $(shell grep '# custom-bootcd' $(1)),echo $(1) appears to be patched already.;,patch $(1) $(patsubst /usr/%,%.patch,$(1));)
 endef
 
 patch:	patches do_patch
@@ -53,35 +51,42 @@ do_patch: ${source_files}
 	@$(foreach source,$^,$(call check_patch,$(source)))
 
 define check_unpatch = 
-	$(if $(shell grep '# custom-bootcd' $(1)),echo Unpatching $(1);mv $(1).orig $(1);,)
+	$(if $(shell grep '# custom-bootcd' $(1)),echo Unpatching $(1);mv $(1).orig $(1);,echo $(1) does not appear to be patched.;)
 endef
 
 unpatch: ${source_files}
 	@$(foreach source,$^,$(call check_unpatch,$(source)))
 
-require_root = $(if $(shell [[ $$(id -u) = 0 ]] && echo root),,$(error requires root))
-require_var = $(if $(shell [ "$(1)" ] && echo ok),,$(error $(1) must be set))
-
 ${tarball}: ${tarball_files}
-	$(call require_root)
+	$(require_root)
 	chown -R root.wheel site
-	tar czvf ${tarball} -C site . 
-	chown -R $$(id -u).$$(id -g) site
+	chmod +x site/install.site
+	tar czvf ${tarball} -C site .
+	chown -R ${build_user} site;
+	chown ${build_user} ${tarball}
 
 tarball: ${tarball}
 
 boot-message:
 	m4 -DBUILD_HOST="$(shell uname -a)" -DBUILD_DATE="$(shell date)" <boot-message.in >boot-message
 
-${custom_boot_iso}: verify patch tarball ${boot_files}
-	$(call require_root)
+require_root = $(if $(shell [[ $$(id -u) = 0 ]] && echo root),,$(error requires root))
+require_var = $(if $(shell [ -n "$${$(1)}" ] && echo ok),,$(error $(1) must be set))
+require_mfs_mount = $(if $(shell df | grep '^mfs:.*$(1)$$'),,$(error $(1) must be mounted as mfs))
+
+${iso}: tarball ${boot_files}
+	$(require_root)
+	$(call require_var,DESTDIR)
+	$(call require_var,RELEASEDIR)
+	$(call require_mfs_mount,/usr/dest)
 	rm -rf /root/custom
 	mkdir /root/custom
-	for file in ${boot_files}; do cp $$file /root/custom; done  
+	for file in ${tarball} ${boot_files}; do cp $$file /root/custom; done  
 	chown -R root.wheel /root/custom
 	ksh -c 'cd /usr/src/etc;time make release'
-	cp $$RELEASEDIR/cd${OSREV}.iso ./custom${OSREV}.iso
-	[ -n "$$UPLOAD_TARGET" ] && ssh ./custom${OSREV}.iso $$UPLOAD_TARGET
+	cp $$RELEASEDIR/cd${OSREV}.iso ${iso}
+	chown ${build_user} ${iso}
+	[ -n "$$UPLOAD_TARGET" ] && scp ${iso} $$UPLOAD_TARGET
 
 clean: unpatch
 	rm -f ${patch_files}

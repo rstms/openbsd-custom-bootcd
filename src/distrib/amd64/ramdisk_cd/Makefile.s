@@ -42,6 +42,7 @@ ${CDROM}: bsd.rd
 	mkdir -p ${.OBJDIR}/cd-dir/etc
 	echo "set image /${OSREV}/${MACHINE}/bsd.rd" > ${.OBJDIR}/cd-dir/etc/boot.conf
 	# custom-bootcd-begin
+	echo "set timeout 10" >> ${.OBJDIR}/cd-dir/etc/boot.conf
 	cat /root/custom/boot-message >> ${.OBJDIR}/cd-dir/etc/boot.conf
 	cp /root/custom/site${OSrev}.tgz ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}/site${OSrev}.tgz
 	cp /root/custom/INSTALL.${MACHINE} ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}/INSTALL.${MACHINE}
