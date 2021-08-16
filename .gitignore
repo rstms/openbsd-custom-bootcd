@@ -6,4 +6,4 @@ mirror_verified
 site??.tgz
 boot-message
 auto_install.conf
-
+env/

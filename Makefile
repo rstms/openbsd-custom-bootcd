@@ -8,13 +8,14 @@ OSrev:=$(shell uname -r)
 OSREV:=$(shell uname -r | tr -d .)
 build_user := $(shell stat -f '%u.%g' $(lastword $(MAKEFILE_LIST)))
 
+
 .SUFFIXES: .s .patch
 .s.patch:
 	diff -u /usr/$(basename $<) $< >$@ || true
 
 .SUFFIXES: .in .conf
 .in.conf:
-	m4 $< | awk 'NF' >$@
+	envdir env bash $< >$@
 
 iso := custom${OSREV}.iso
 tarball := site${OSREV}.tgz
@@ -44,9 +45,7 @@ mirror_verified: mirror
 
 patches: ${patch_files}
 
-autoinstall: auto_install.conf
-
-auto_install.conf: auto_install.in config.m4
+auto_install.conf: auto_install.in
 
 define check_patch = 
 	$(if $(shell grep '# custom-bootcd' $(1)),echo $(1) appears to be patched already.;,patch $(1) $(patsubst /usr/%,%.patch,$(1));)
@@ -75,7 +74,7 @@ ${tarball}: ${tarball_files}
 tarball: ${tarball}
 
 boot-message:
-	m4 -DBUILD_HOST="$(shell uname -a)" -DBUILD_DATE="$(shell date)" <boot-message.in >boot-message
+	env BUILD_HOST="$(shell uname -a)" BUILD_DATE="$(shell date)" sh boot-message.in >boot-message
 
 require_root = $(if $(shell [[ $$(id -u) = 0 ]] && echo root),,$(error requires root))
 require_var = $(if $(shell [ -n "$${$(1)}" ] && echo ok),,$(error $(1) must be set))
@@ -88,8 +87,9 @@ ${iso}: tarball ${boot_files} $(addprefix mirror/,${mirror_files})
 	$(call require_mfs_mount,/usr/dest)
 	rm -rf /root/custom
 	mkdir -p /root/custom/sets
-	for file in ${boot_files} ${tarball}; do cp $$file /root/custom; done  
+	for file in ${boot_files}; do cp $$file /root/custom; done  
 	for file in ${mirror_files}; do cp mirror/$$file /root/custom/sets; done  
+	cp ${tarball} /root/custom/sets
 	chown -R root.wheel /root/custom
 	ksh -c 'cd /usr/src/etc;time make release'
 	cp $$RELEASEDIR/cd${OSREV}.iso ${iso}

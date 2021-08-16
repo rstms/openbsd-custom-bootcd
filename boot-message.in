@@ -1,6 +1,7 @@
+cat <<EOF
 echo --------------------------------------------------
-echo BUILD_HOST
-echo BUILD_DATE
+echo $BUILD_HOST
+echo $BUILD_DATE
 echo --------------------------------------------------
 echo
 echo WARNING, WARNING, DANGER, WILL ROBINSON!
@@ -17,3 +18,4 @@ echo There are no confirmation prompts.
 echo
 echo To prevent this, POWER DOWN IMMEDIATELY.
 echo
+EOF
