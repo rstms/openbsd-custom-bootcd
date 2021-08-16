@@ -47,15 +47,18 @@ review the changes under `src/...` to determine any required changes.
 The makefile is used to apply the changes to the source tree and build a
 customized version of the ramdisk-based `cdXX.iso`
 
+### Configuration 
 Rename the file `config.m4.template` to `config.m4`.  This is used to build the
 `auto_install.conf` response file.
 
+The ISO may be configured with SSH keys and passwords for root and/or an admin user.
 Fill in the XXXXXXXX fields with appropriate responses.
 For details see: https://man.openbsd.org/autoinstall
 
 To build the ISO image:
 ```
-doas gmake
+gmake config
+doas gmake build
 ```
 
 ### Notes

@@ -20,10 +20,12 @@ tarball_files := $(shell find site -type f)
 custom_files := $(shell find src -type f)
 patch_files := $(custom_files:.s=.patch)
 source_files := $(addprefix /usr/,$(basename $(custom_files)))
-boot_files := auto_install.conf boot-message ${tarball} INSTALL.${MACHINE}
+boot_files := auto_install.conf boot-message INSTALL.${MACHINE}
 custom_boot_iso := custom${OSREV}.iso
 
-iso:	${custom_boot_iso}
+config: verify clean patch ${boot_files}
+
+build:	${custom_boot_iso}
 
 test:
 	@echo MACHINE=${MACHINE}
@@ -45,7 +47,9 @@ define check_patch =
 	$(if $(shell grep '# custom-bootcd' $(1)),,patch $(1) $(patsubst /usr/%,%.patch,$(1));)
 endef
 
-patch: ${source_files}
+patch:	patches do_patch
+
+do_patch: ${source_files}
 	@$(foreach source,$^,$(call check_patch,$(source)))
 
 define check_unpatch = 
@@ -62,19 +66,14 @@ ${tarball}: ${tarball_files}
 	$(call require_root)
 	chown -R root.wheel site
 	tar czvf ${tarball} -C site . 
+	chown -R $$(id -u).$$(id -g) site
 
 tarball: ${tarball}
 
 boot-message:
 	m4 -DBUILD_HOST="$(shell uname -a)" -DBUILD_DATE="$(shell date)" <boot-message.in >boot-message
 
-clean: unpatch
-	rm -f ${patch_files}
-	rm -f auto_install.conf
-	rm -f ${tarball}
-	rm -f boot-message
-
-${custom_boot_iso}: verify unpatch patches patch tarball ${boot_files}
+${custom_boot_iso}: verify patch tarball ${boot_files}
 	$(call require_root)
 	rm -rf /root/custom
 	mkdir /root/custom
@@ -82,3 +81,13 @@ ${custom_boot_iso}: verify unpatch patches patch tarball ${boot_files}
 	chown -R root.wheel /root/custom
 	ksh -c 'cd /usr/src/etc;time make release'
 	cp $$RELEASEDIR/cd${OSREV}.iso ./custom${OSREV}.iso
+	[ -n "$$UPLOAD_TARGET" ] && ssh ./custom${OSREV}.iso $$UPLOAD_TARGET
+
+clean: unpatch
+	rm -f ${patch_files}
+	rm -f auto_install.conf
+	rm -f ${tarball}
+	rm -f boot-message
+
+sterile: clean
+	rm -f *.iso
