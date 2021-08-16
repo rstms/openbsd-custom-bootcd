@@ -1,17 +1,18 @@
 echo +--------------------------------+
 echo | Automatic OpenBSD Installation |
 echo +--------------------------------+
-echo 
+echo
 echo BUILD_HOST
 echo BUILD_DATE
-echo  
+echo
 echo WARNING, WARNING, DANGER, WILL ROBINSON!
-echo 
+echo
 echo This installer is designed for use on an unattended 
-echo cloud instance.  In about 10 seconds, it will begin 
-echo automatic installation onto the primary drive,
-echo DESTRUCTIVELY overwriting any existing data.
-echo 
+echo cloud instance.  In about 10 seconds it will begin 
+echo automatic installation onto the primary drive.
+echo
+echo This will DESTRUCTIVELY overwrite existing data.
+echo
 echo To prevent this, POWER DOWN IMMEDIATELY.
 echo 
 echo

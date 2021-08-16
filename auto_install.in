@@ -8,6 +8,7 @@ Public ssh key for user = PUBLIC_KEY
 Location of sets = http
 HTTP Server = OPENBSD_MIRROR
 Set name(s) = -x* -g*
+Set name(s) = done
 Location of sets = cd0
 Set name(s) = -* +site*
 Directory does not contain SHA256.sig. Continue = yes

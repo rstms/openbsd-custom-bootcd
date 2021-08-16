@@ -1,7 +1,11 @@
 #!/bin/ksh
 
-# enable doas for group wheel
+echo "-------------------------------------"
+echo "siteXX.tgz post-install configuration"
+echo "-------------------------------------"
+
+echo Enabling doas for group wheel
 cp /etc/examples/doas.conf /etc
 
-# apply system patches on first boot
-cat "syspatch && reboot" >>/etc/rc.firsttime
+echo Modifying rc.firsttime to apply system patches
+echo "syspatch" >>/etc/rc.firsttime
