@@ -17,7 +17,7 @@ build_user := $(shell stat -f '%u.%g' $(lastword $(MAKEFILE_LIST)))
 .in.conf:
 	echo ${OSREV} >env/OSREV
 	echo ${MACHINE} >env/MACHINE
-	envdir env bash $< >$@
+	envdir env sh $< >$@
 
 iso := custom${OSREV}.iso
 tarball := site${OSREV}.tgz

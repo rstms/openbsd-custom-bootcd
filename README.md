@@ -11,10 +11,13 @@ The following modificiations have been made:
 - system hostname `puffy`
 - root password set
 - user `admin` created with OpenSSH public key in `~/.ssh/authorized_keys`
-- system packages downloaded from cdn.openbsd.org
+- system package sets included on boot image
+- automatic `syspatch` on first boot
 - tty console enabled on boot
-- `doas` enabled for `admin` 
+- `doas` enabled for `wheel` users
+
 -----
+
 ### Caution!  This is a power tool with no safety guards.
 The resulting boot CD will automatically install onto the first
 hard drive.  Take care not to leave it in inappropriate places such
@@ -23,18 +26,25 @@ as the CDROM drive of your development system.
 Any system allowed to boot from this CD will have its data *DESTRUCTIVELY OVERWRITTEN*.
 
 YOU HAVE BEEN WARNED
+
 -----
+
 ### Prerequisites
 Download OpenBSD source and build the system following the instructions
 in the `release` man page.
 
-- The makefile requires `gmake`
+- `gmake` `pkg_add gmake`
+- `envdir` install with https://github.com/rstms/djbscripts
+
 -----
+
 ### References
  - https://www.openbsd.org/anoncvs.html
  - https://www.openbsd.org/faq/faq5.html
  - https://man.openbsd.org/release
+
 -----
+
 ### Instructions
 
 This repo contains modified copies of files from the source tree at `/usr/src/`
@@ -43,7 +53,9 @@ review the changes under `src/...` to determine any required changes.
 
 The makefile is used to apply the changes to the source tree and build a
 customized version of the ramdisk-based `cdXX.iso`
+
 -----
+
 ### Configuration 
 
 The ISO may be configured with SSH keys and passwords for root and/or an admin user.
@@ -73,6 +85,7 @@ USER_PUBLIC_KEY
 X11_ENABLE
 X11_XENODM
 ```
+
 Example:
 ```
 echo yes >env/ROOT_SSH_LOGIN
@@ -81,11 +94,14 @@ echo no >env/X11_XENODM
 cat ~/.ssh/id_ed25519.pub >env/USER_PUBLIC_KEY
 ```
 
-Write appropriate values into each file. (see `man autoinstall`)  Put 
-the actual password for root and the admin user in the envdir files.
-The makefile will use `encrypt` to generate hash values for 
-`auto_install.conf`
+see https://man.openbsd.org/autoinstall.8 
+
+Write appropriate values into each file.  Put the actual password
+for root and the admin user in the envdir files. The makefile will
+use `encrypt` to generate hash values for `auto_install.conf`
+
 -----
+
 ### Build
 
 To configure and build the ISO image:
@@ -94,6 +110,8 @@ gmake config
 doas gmake build
 ```
 
+-----
+
 ### Notes
-patch `/usr/src/distrib/amd64/ramdisk_cd/list` to add files to the `bsd.rd` ramdisk
-patch `/usr/src/distrib/amd64/ramdisk_cd/Makefile` to add files to the iso filesystem
+- patch `/usr/src/distrib/amd64/ramdisk_cd/list` to add files to the `bsd.rd` ramdisk
+- patch `/usr/src/distrib/amd64/ramdisk_cd/Makefile` to add files to the iso filesystem
