@@ -4,8 +4,9 @@ echo "-------------------------------------"
 echo "siteXX.tgz post-install configuration"
 echo "-------------------------------------"
 
-echo Enabling doas for group wheel
+echo Enabling doas for group wheel.
 cp /etc/examples/doas.conf /etc
 
-echo Modifying rc.firsttime to apply system patches
-echo "syspatch" >>/etc/rc.firsttime
+echo Modifying rc.firsttime to apply system patches and reboot.
+echo syspatch >>/etc/rc.firsttime
+echo reboot >>/etc/rc.firsttime

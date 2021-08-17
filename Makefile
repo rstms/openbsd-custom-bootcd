@@ -25,7 +25,8 @@ patch_files := $(custom_files:.s=.patch)
 source_files := $(addprefix /usr/,$(basename $(custom_files)))
 boot_files := auto_install.conf boot-message  
 mirror_files := SHA256.sig INSTALL.${MACHINE} cdboot cdbr bsd bsd.rd \
-	base${OSREV}.tgz comp${OSREV}.tgz game${OSREV}.tgz man${OSREV}.tgz xbase${OSREV}.tgz 
+	base${OSREV}.tgz comp${OSREV}.tgz game${OSREV}.tgz man${OSREV}.tgz \
+	xbase${OSREV}.tgz xbase${OSREV}.tgz xfont${OSREV}.tgz xserv${OSREV}.tgz xshare${OSREV}.tgz
 
 config: clean patch ${boot_files} mirror_verified
 

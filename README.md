@@ -1,5 +1,4 @@
-openbsd-custom-bootcd
----------------------
+# openbsd-custom-bootcd
 
 Build scripts for a customized OpenBSD ramdisk bootcd `customXX.iso`
 
@@ -15,9 +14,8 @@ The following modificiations have been made:
 - system packages downloaded from cdn.openbsd.org
 - tty console enabled on boot
 - `doas` enabled for `admin` 
-
----
-### WARNING
+-----
+### Caution!  This is a power tool with no safety guards.
 The resulting boot CD will automatically install onto the first
 hard drive.  Take care not to leave it in inappropriate places such
 as the CDROM drive of your development system.
@@ -57,21 +55,36 @@ and the contents of the files are the values.
 These env variables are used to create `auto_install.conf` from the
 `auto_install.in` template.   A similar mechanism creates `boot-message`
 
-Create the directory `env` with the following filenames:
+Write response values to files in `env` with these names:
 ```
 OPENBSD_MIRROR
-PUBLIC_KEY
 ROOT_PASSWORD
+ROOT_PUBLIC_KEY
+ROOT_SSH_LOGIN
+SET_SELECT
+START_SSHD
 SYSTEM_HOSTNAME
 TIMEZONE
 TTY_CONSOLE
+TTY_SPEED
 USER
 USER_PASSWORD
+USER_PUBLIC_KEY
+X11_ENABLE
+X11_XENODM
+```
+Example:
+```
+echo yes >env/ROOT_SSH_LOGIN
+echo no >env/X11_ENABLE
+echo no >env/X11_XENODM
+cat ~/.ssh/id_ed25519.pub >env/USER_PUBLIC_KEY
 ```
 
-Write the appropriate values into each file.  Put the actual password for 
-root and the admin user in the envdir files, and the makefile will use
-`encrypt` to hash the values for `auto_install.conf`.
+Write appropriate values into each file. (see `man autoinstall`)  Put 
+the actual password for root and the admin user in the envdir files.
+The makefile will use `encrypt` to generate hash values for 
+`auto_install.conf`
 -----
 ### Build
 
