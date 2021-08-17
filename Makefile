@@ -15,6 +15,8 @@ build_user := $(shell stat -f '%u.%g' $(lastword $(MAKEFILE_LIST)))
 
 .SUFFIXES: .in .conf
 .in.conf:
+	echo ${OSREV} >env/OSREV
+	echo ${MACHINE} >env/MACHINE
 	envdir env bash $< >$@
 
 iso := custom${OSREV}.iso
