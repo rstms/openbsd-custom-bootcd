@@ -40,14 +40,16 @@ ${CDROM}: bsd.rd
 	rm -rf ${.OBJDIR}/cd-dir
 	mkdir -p ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
 	mkdir -p ${.OBJDIR}/cd-dir/etc
+	echo "set image /${OSREV}/${MACHINE}/bsd.rd" > ${.OBJDIR}/cd-dir/etc/boot.conf
 	# custom-bootcd-begin
-	echo "set image /bsd.rd" > ${.OBJDIR}/cd-dir/etc/boot.conf
 	echo "set timeout 10" >> ${.OBJDIR}/cd-dir/etc/boot.conf
 	cat /root/custom/boot-message >> ${.OBJDIR}/cd-dir/etc/boot.conf
-	echo "set tty com0" >> ${.OBJDIR}/cd-dir/etc/boot.conf
-	cp /root/custom/sets/* ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
-	cp ${.OBJDIR}/bsd.rd ${.OBJDIR}/cd-dir/
+	cp /root/custom/sets/site${OSrev}.tgz ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
 	# custom-bootcd-end
+	echo "set tty com0" >> ${.OBJDIR}/cd-dir/etc/boot.conf
+	cp ${.OBJDIR}/bsd.rd ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
+	cp ${DESTDIR}/usr/mdec/cdbr ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}
+	cp ${DESTDIR}/usr/mdec/cdboot ${.OBJDIR}/cd-dir/${OSREV}/${MACHINE}/cdboot
 	mkhybrid -a -R -T -L -l -d -D -N -o ${.OBJDIR}/${CDROM} \
 	    -A "OpenBSD ${OSREV} ${MACHINE} bootonly CD" \
 	    -P "Copyright (c) `date +%Y` Theo de Raadt, The OpenBSD project" \
